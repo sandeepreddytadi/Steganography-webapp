@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Message Steganography</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --text-color: #2c3e50;
+        }
+
+        .nav{
+            height: 50px;
+            width: 50px;
+            position: fixed;
+            top: calc(100% - 10%);
+            left: calc(100% - 6%);
+            z-index: 9999;
+            background-color: var(--secondary-color);
+        }
+        
+        .nav:hover::after {
+            content: "About Project";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            z-index: 1000;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+        .drop-zone:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        .loading {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen" style="background-color: var(--light-bg)">
+    <!-- Nav -->
+    <a href="index2">
+        <button class="nav text-center font-medium rounded-lg text-white">?</button>
+    </a>
+
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4" style="color: var(--primary-color)">Secret Message Steganography</h1>
+            <p style="color: var(--text-color)">Hide encrypted messages in images securely</p>
+        </header>
+
+        <!-- Main Tabs -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex mb-6">
+                <button id="encodeTab" class="flex-1 py-2 px-4 text-center font-medium rounded-l-lg text-white" style="background-color: var(--secondary-color)">
+                    Encode Message
+                </button>
+                <button id="decodeTab" class="flex-1 py-2 px-4 text-center font-medium rounded-r-lg bg-gray-200 text-gray-700">
+                    Decode Message
+                </button>
+            </div>
+
+            <!-- Encode Form -->
+            <div id="encodeForm" class="fade-in">
+                <div class="drop-zone p-8 rounded-lg text-center mb-6 cursor-pointer">
+                    <div id="encodePreview" class="mb-4 hidden">
+                        <img id="encodePreviewImg" class="max-h-64 mx-auto rounded" alt="Preview">
+                    </div>
+                    <input type="file" id="encodeImage" class="hidden" accept="image/*">
+                    <div style="color: var(--text-color)">
+                        <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-lg mb-2">Drop your image here or click to upload</p>
+                        <p class="text-sm opacity-60">Supports PNG, JPG up to 16MB</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--text-color)">Secret Message</label>
+                        <textarea id="message" rows="4" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-opacity-50" style="border-color: var(--secondary-color)"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--text-color)">Password</label>
+                        <input type="password" id="encodePassword" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-opacity-50" style="border-color: var(--secondary-color)">
+                    </div>
+                    <button id="encodeButton" class="w-full text-white py-2 px-4 rounded-md transition-colors" style="background-color: var(--secondary-color)">
+                        Encode Message
+                    </button>
+                </div>
+            </div>
+
+            <!-- Decode Form -->
+            <div id="decodeForm" class="hidden fade-in">
+                <div class="drop-zone p-8 rounded-lg text-center mb-6 cursor-pointer">
+                    <div id="decodePreview" class="mb-4 hidden">
+                        <img id="decodePreviewImg" class="max-h-64 mx-auto rounded" alt="Preview">
+                    </div>
+                    <input type="file" id="decodeImage" class="hidden" accept="image/*">
+                    <div style="color: var(--text-color)">
+                        <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-lg mb-2">Drop your encoded image here or click to upload</p>
+                        <p class="text-sm opacity-60">Supports PNG, JPG up to 16MB</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--text-color)">Password</label>
+                        <input type="password" id="decodePassword" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-opacity-50" style="border-color: var(--secondary-color)">
+                    </div>
+                    <button id="decodeButton" class="w-full text-white py-2 px-4 rounded-md transition-colors" style="background-color: var(--secondary-color)">
+                        Decode Message
+                    </button>
+                </div>
+
+                <div id="decodedMessage" class="mt-6 p-4 bg-gray-50 rounded-md hidden">
+                    <h3 class="text-lg font-medium mb-2" style="color: var(--primary-color)">Decoded Message:</h3>
+                    <p id="decodedText" style="color: var(--text-color)" class="whitespace-pre-wrap"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="hidden fade-in bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4" style="color: var(--primary-color)">Encoded Image</h2>
+            <div class="flex flex-col items-center">
+                <img id="resultImage" class="max-w-full h-auto rounded-lg mb-4" alt="Encoded result">
+                <button id="downloadButton" class="text-white py-2 px-6 rounded-md transition-colors" style="background-color: var(--secondary-color)">
+                    Download Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
